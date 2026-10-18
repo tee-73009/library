@@ -43,8 +43,9 @@ using Rat = boost::rational<Bint>;
 #define fin(...) ({print(__VA_ARGS__); return 0; })
 #define break_with(...) ({ __VA_ARGS__; break; })
 #define continue_with(...) ({ __VA_ARGS__; continue; })
-using ll=long long;
-using ld=long double;
+using ll = long long;
+using lll =__int128_t;
+using ld = long double;
 using ull=unsigned long long;
 using pii = pair<int, int>;
 using pll = pair<ll, ll>;
