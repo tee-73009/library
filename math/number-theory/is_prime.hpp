@@ -1,7 +1,7 @@
 #pragma once
 #include "../../template/template.hpp"
-#include "../../data_structure/modint/modint_fast.hpp"
-namespace std {
+#include "../../data_structure/modint_fast.hpp"
+namespace tee {
 // Miller-Rabin
 bool MillerRabin(long long N, vector<long long> A) {
     using mint = fastmodint;

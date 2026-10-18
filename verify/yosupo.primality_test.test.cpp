@@ -2,10 +2,11 @@
 #include "../template/template.hpp"
 #include "../math/number-theory/is_prime.hpp"
 signed main() {
-    inl(t);
-    rep(i,t){
+    ll t;
+    fastio::input(t);
+    while(t--){
         ll a;
         fastio::input(a);
-        YesNo(is_prime(a));
+        fastio::print(is_prime(a)?"Yes":"No");
     }
 }

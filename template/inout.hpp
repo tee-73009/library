@@ -180,7 +180,7 @@ istream &operator>>(istream &a, mint &b){
     return a;
 }
 //998244353_out
-ostream &operator<<(ostream &a, mint &b){
+ostream &operator<<(ostream &a, const mint &b){
     a << b.val();
     return a;
 }
@@ -192,7 +192,7 @@ istream &operator>>(istream &a, Mint &b){
     return a;
 }
 //1000000007_out
-ostream &operator<<(ostream &a, Mint &b){
+ostream &operator<<(ostream &a, const Mint &b){
     a << b.val();
     return a;
 }
@@ -245,9 +245,16 @@ void print(const T &t, const U &...u) {
     print(u...);
 }
 }
-
-
-
+namespace tee {
+inline void debug_out() { cerr << "\n"; }
+template <typename T, class... U>
+void debug_out(const T &t, const U &...u) {
+    cerr << t;
+    if (sizeof...(u)) cerr << ", ";
+    debug_out(u...);
+}
+}  // namespace tee
+#define debug(...) cerr << "L" << __LINE__ << " [" << #__VA_ARGS__ << "]: ", tee::debug_out(__VA_ARGS__)
 namespace fastio {
 template <class Char, std::enable_if_t<std::is_same_v<Char, char>, int> = 0>
 inline Char in() { return getchar_unlocked(); }

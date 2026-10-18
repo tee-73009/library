@@ -1,12 +1,12 @@
 #pragma once
-#include "../../template/template.hpp"
-namespace std {
-template <class Abel> struct BIT {
+#include "../template/template.hpp"
+namespace tee {
+template <class Abel> struct BIT_raq {
     Abel UNITY_SUM = 0;
     vector<Abel> dat[2];
     int N;
 
-    explicit BIT(int n, Abel unity = 0) : UNITY_SUM(unity), N(n) {
+    explicit BIT_raq(int n, Abel unity = 0) : UNITY_SUM(unity), N(n) {
         init(n);
     }
     void init(int n) {
@@ -35,7 +35,7 @@ template <class Abel> struct BIT {
         return sub_sum(0, b) + sub_sum(1, b) * b - sub_sum(0, a) - sub_sum(1, a) * a;
     }
     
-    friend ostream& operator<<(ostream& os, BIT bit) {
+    friend ostream& operator<<(ostream& os, BIT_raq bit) {
         for (int i = 0; i < bit.N; i++) {
             os << bit.sum(i, i + 1) << " ";
         }

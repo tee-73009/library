@@ -1,6 +1,6 @@
 #pragma once
-#include "../../template/template.hpp"
-namespace std {
+#include "../template/template.hpp"
+namespace tee {
 template <class Abel> struct BIT {
     Abel UNITY_SUM = 0;
     vector<Abel> dat;

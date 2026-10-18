@@ -1,7 +1,7 @@
 #pragma once
 #include "../template/template.hpp"
-namespace std{
-//座標圧縮
+namespace tee {
+//座標圧縮 ex.vec={1,6,2,8,6}→vals={1,2,6,8},vec={0,2,1,3,2}
 // O(NlogN)
 template<class T>
 vector<T> compress(vector<T> &vec){

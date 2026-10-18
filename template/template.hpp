@@ -53,7 +53,11 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+namespace tee {}
+using namespace tee;
 #include "macro.hpp"
 #include "inout.hpp"
-#include "func.hpp"
-using namespace std;
+#include "arith_op.hpp"

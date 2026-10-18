@@ -1,42 +1,9 @@
 #pragma once
+#include "is_prime.hpp"
 #include "../../template/template.hpp"
-#include "../../data_structure/modint/modint_fast.hpp"
+#include "../../data_structure/modint_fast.hpp"
 #include "../../util/xorshift.hpp"
-namespace std {
-    // Miller-Rabin
-bool MillerRabin(long long N, vector<long long> A) {
-    using mint = fastmodint;
-    mint::set_mod(N);
-    
-    long long s = 0, d = N - 1;
-    while (d % 2 == 0) {
-        ++s;
-        d >>= 1;
-    }
-    for (auto a : A) {
-        if (N <= a) return true;
-        mint x = mint(a).pow(d);
-        if (x != 1) {
-            long long t;
-            for (t = 0; t < s; ++t) {
-                if (x == N - 1) break;
-                x *= x;
-            }
-            if (t == s) return false;
-        }
-    }
-    return true;
-}
-
-bool is_prime(long long N) {
-    if (N <= 1) return false;
-    else if (N == 2) return true;
-    else if (N % 2 == 0) return false;
-    else if (N < 4759123141LL)
-        return MillerRabin(N, {2, 7, 61});
-    else
-        return MillerRabin(N, {2, 325, 9375, 28178, 450775, 9780504, 1795265022});
-}
+namespace tee {
 long long pollard(long long N) {
     if (N % 2 == 0) return 2;
     if (is_prime(N)) return N;
@@ -68,5 +35,14 @@ vector<long long> prime_factorize(long long N) {
     left.insert(left.end(), right.begin(), right.end());
     sort(left.begin(), left.end());
     return left;
+}
+
+vpll prime_factorize_pair(long long N) {
+    vpll res;
+    for (long long p : prime_factorize(N)) {
+        if (!res.empty() && res.back().first == p) ++res.back().second;
+        else res.push_back({p, 1});
+    }
+    return res;
 }
 }

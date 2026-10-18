@@ -29,7 +29,7 @@ using Rat = boost::rational<Bint>;
 #endif
 #define OVERLOAD_3(_1, _2, _3, name, ...) name
 #define REP1(i, n) for (auto i = std::decay_t<decltype(n)>{}; (i) < (n); ++(i))
-#define REP2(i, l, r) for (auto i = (l); (i) < (r); ++(i))
+#define REP2(i, l, r) for (auto i = (l); (i) != (r); ++(i))
 #define rep(...) OVERLOAD_3(__VA_ARGS__, REP2, REP1)(__VA_ARGS__)
 #define RREP1(i, n) for (auto i = (n); (i) != (std::decay_t<decltype(n)>{}); --(i))
 #define RREP2(i, l, r) for (auto i = (l); (i) != (r); --(i))
@@ -43,9 +43,8 @@ using Rat = boost::rational<Bint>;
 #define fin(...) ({print(__VA_ARGS__); return 0; })
 #define break_with(...) ({ __VA_ARGS__; break; })
 #define continue_with(...) ({ __VA_ARGS__; continue; })
-using ll = long long;
-using lll =__int128_t;
-using ld = long double;
+using ll=long long;
+using ld=long double;
 using ull=unsigned long long;
 using pii = pair<int, int>;
 using pll = pair<ll, ll>;
@@ -63,6 +62,7 @@ using vvvi = vector<vvi>;
 using vvvll = vector<vvll>;
 using vvvb = vector<vvb>;
 using vpll = vector<pll>;
+using vvpll = vector<vpll>;
 using mi = map<int, int>;
 using mll = map<ll, ll>;
 using msi = map<string, int>;
@@ -72,21 +72,20 @@ using mml = map<ll,mll>;
 using Graph = vector<vector<ll>>;
 const string ABC="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const string abc="abcdefghijklmnopqrstuvwxyz";
-#define gcd __gcd
-#define pb push_back
 template<class T> using pq = priority_queue<T>;
 template<class T> using pqr = priority_queue<T, vector<T>, greater<T>>;
-#define lb(v, k) (lower_bound((v).begin(), (v).end(), (k)) - v.begin())
-#define ub(v, k) (upper_bound((v).begin(), (v).end(), (k)) - v.begin())
+template<typename T> using ordered_set = tree<T, null_type, std::less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+#define lb(v, k) (lower_bound((v).begin(), (v).end(), (k)) - (v).begin())
+#define ub(v, k) (upper_bound((v).begin(), (v).end(), (k)) - (v).begin())
+#define pb push_back
+#define eb emplace_back
 #define fi first
 #define se second
-#define elif else if
-#define updiv(n,x) (n + x - 1) / x
-#define rounddiv(n,x) (ll)((double)(n)/(double)(x)+0.5)
 #define fix(n) fixed << setprecision(n)
 #define _print(n) cout << " " << (n) << endl
 #define print_(n) cout << (n) << " "
-#define ioinit ios::sync_with_stdio(false);std::cin.tie(nullptr)
+#define ioinit ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(0);cout<<fix(15);cerr<<fix(15)
+#define incheck string _____;if(cin>>_____){throw runtime_error("Input not finished!");}
 template<class... T>
 constexpr auto min(T... a){
     return min(initializer_list<common_type_t<T...>>{a...});
@@ -99,15 +98,28 @@ template <typename T>
 inline bool chmax(T &a, T b) { return ((a < b) ? (a = b, true) : (false)); }
 template <typename T>
 inline bool chmin(T &a, T b) { return ((a > b) ? (a = b, true) : (false)); }
-const ll mod=998244353;
-const ll MOD=1000000007;
-const ld PI=3.141592653589793;
+template <class T>
+ll sum(const T &a) { return accumulate(all(a), 0LL); }
+constexpr ll mod=998244353;
+constexpr ll MOD=1000000007;
+constexpr ld PI=3.141592653589793;
 const vll dx4={0,-1,0,1};
 const vll dy4={1,0,-1,0};
 const vll dx8={1,0,-1,0,1,-1,1,-1};
 const vll dy8={0,1,0,-1,1,-1,-1,1};
 const vll dx6={1,0,-1,0,1,-1};
 const vll dy6={0,1,0,-1,1,-1};
-const int inf = INT_MAX / 2;
-const ll INF= 1LL << 60;
+constexpr int inf = INT_MAX / 2;
+constexpr ll INF= 1LL << 60;
+template<typename F>
+struct REC{
+    private:
+    F f;
+    public:
+    explicit constexpr REC(F&&f_):f(std::forward<F>(f_)){}
+    template<typename... Args>
+    constexpr auto operator()(Args&&...args)const{
+        return f(*this, std::forward<Args>(args)...);
+    }
+};
 #endif

@@ -1,10 +1,11 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/many_aplusb_128bit"
 #include "../template/template.hpp"
 signed main() {
-    inl(t);
-    rep(i,t){
+    ll t;
+    fastio::input(t);
+    while(t--){
         __int128_t a,b;
-        input(a,b);
-        print(a+b);
+        fastio::input(a,b);
+        fastio::print(a+b);
     }
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include "../../template/template.hpp"
-namespace std {
+#include "../template/template.hpp"
+namespace tee {
 template <class Monoid>
 struct SegTree {
     using Func = function<Monoid(Monoid, Monoid)>;

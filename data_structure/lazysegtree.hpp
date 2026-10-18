@@ -1,6 +1,6 @@
 #pragma once
-#include "../../template/template.hpp"
-namespace std {
+#include "../template/template.hpp"
+namespace tee {
 template <class Monoid, class Action>
 struct Lazy_SegTree {
     using FuncMonoid = function<Monoid(Monoid, Monoid)>;

@@ -1,6 +1,6 @@
 #pragma once
-#include "../../template/template.hpp"
-namespace std {
+#include "../template/template.hpp"
+namespace tee {
 // montgomery modint (MOD < 2^62, MOD is odd)
 struct fastmodint {
     using mint = fastmodint;
