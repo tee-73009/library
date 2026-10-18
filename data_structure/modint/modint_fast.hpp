@@ -1,3 +1,4 @@
+#pragma once
 #include "../../template/template.hpp"
 namespace std {
 // montgomery modint (MOD < 2^62, MOD is odd)

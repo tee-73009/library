@@ -1,3 +1,4 @@
+#pragma once
 #include "../../template/template.hpp"
 namespace std {
 template <class Monoid, class Action>
