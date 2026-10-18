@@ -1,3 +1,4 @@
+#pragma once
 #include "../template/template.hpp"
 namespace std{
 //座標圧縮

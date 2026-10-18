@@ -53,7 +53,7 @@ ll div(ll a, ll b, ll Mod) {
 return a * modinv(b,Mod) % Mod;
 }
 //素因数分解
-vpll prime_factorize(ll n) {
+vpll prime_factorize_pairs(ll n) {
     vpll res;
     for (ll p = 2; p * p <= n; ++p) {
         if (n % p != 0) continue;
@@ -697,5 +697,5 @@ ll id(string s) {
         dp[i+1][1]+=dp[i][0]*(s[i]-'0');
         dp[i+1][0]+=dp[i][0];
     }
-    print(dp[s.size()][0]+dp[s.size()][1]-1);//最後に0の分の1を引く
+    return dp[s.size()][0]+dp[s.size()][1]-1;//最後に0の分の1を引く
 }

@@ -1,3 +1,4 @@
+#pragma once
 #include "../template/template.hpp"
 namespace std{
 //累積和(l以上r以下→s[r+1]-s[l])

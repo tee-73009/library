@@ -1,4 +1,4 @@
-#include "../template/template.hpp"
+#include "../../template/template.hpp"
 namespace std {
 template <int Mod>
 struct modint {

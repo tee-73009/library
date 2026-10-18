@@ -1,4 +1,4 @@
-#include "../template/template.hpp"
+#include "../../template/template.hpp"
 namespace std {
 template <class Monoid>
 struct SegTree {

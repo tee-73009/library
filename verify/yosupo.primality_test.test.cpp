@@ -1,6 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/primality_test"
 #include "../template/template.hpp"
-#include "library/math/number-theory/is_prime.hpp"
+#include "../math/number-theory/is_prime.hpp"
 signed main() {
     inl(t);
     rep(i,t){

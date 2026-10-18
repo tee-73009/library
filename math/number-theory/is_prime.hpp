@@ -1,5 +1,5 @@
-#include "../template/template.hpp"
-#include "../data_structure/modint/modint_fast.hpp"
+#include "../../template/template.hpp"
+#include "../../data_structure/modint/modint_fast.hpp"
 namespace std {
 // Miller-Rabin
 bool MillerRabin(long long N, vector<long long> A) {

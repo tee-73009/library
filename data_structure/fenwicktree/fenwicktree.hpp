@@ -1,4 +1,4 @@
-#include "../template/template.hpp"
+#include "../../template/template.hpp"
 namespace std {
 template <class Abel> struct BIT {
     Abel UNITY_SUM = 0;
