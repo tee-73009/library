@@ -1,5 +1,8 @@
 #pragma once
+#if defined(__x86_64__)
 #pragma GCC target("avx2")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#endif
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
 #include <algorithm>
@@ -53,5 +56,4 @@
 #include "macro.hpp"
 #include "inout.hpp"
 #include "func.hpp"
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 using namespace std;

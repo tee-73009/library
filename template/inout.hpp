@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LIB_TEMPLATE_INOUT_HPP
+#define LIB_TEMPLATE_INOUT_HPP
 #include "template.hpp"
 namespace std {
 //pair_out
@@ -303,3 +304,4 @@ void print(const T &t, const U &...u) {
     print(u...);
 }
 }  // namespace fastio
+#endif

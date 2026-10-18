@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LIB_TEMPLATE_MACRO_HPP
+#define LIB_TEMPLATE_MACRO_HPP
 #include "template.hpp"
 using namespace std;
 #if __has_include(<atcoder/all>)
@@ -108,3 +109,4 @@ const vll dx6={1,0,-1,0,1,-1};
 const vll dy6={0,1,0,-1,1,-1};
 const int inf = INT_MAX / 2;
 const ll INF= 1LL << 60;
+#endif

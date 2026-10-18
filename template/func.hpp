@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LIB_TEMPLATE_FUNC_HPP
+#define LIB_TEMPLATE_FUNC_HPP
 #include "template.hpp"
 #include "../util/compress.hpp"
 #include "../util/get_sum.hpp"
@@ -699,3 +700,4 @@ ll id(string s) {
     }
     return dp[s.size()][0]+dp[s.size()][1]-1;//最後に0の分の1を引く
 }
+#endif
