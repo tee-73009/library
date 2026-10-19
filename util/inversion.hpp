@@ -1,7 +1,7 @@
 #pragma once
 #include "../template/template.hpp"
 #include "compress.hpp"
-#include "../data_structure/fenwicktree/fenwicktree.hpp"
+#include "../data_structure/fenwicktree.hpp"
 namespace tee {
 template<class T>
 long long inversion(vector<T> a){
