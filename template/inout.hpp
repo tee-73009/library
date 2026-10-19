@@ -268,10 +268,17 @@ inline std::string in() {
 template <class Integer, std::enable_if_t<std::is_integral_v<Integer> and not std::is_same_v<Integer, char>, int> = 0>
 inline Integer in() {
     char c; do { c = getchar_unlocked(); } while (isspace(c));
-    if (std::is_signed<Integer>::value and c == '-') return -in<Integer>();
-    Integer n = 0;
-    do { n = n * 10 + c - '0'; } while (not isspace(c = getchar_unlocked()));
-    return n;
+    bool minus = false;
+    if constexpr (std::is_signed_v<Integer>) {
+        if (c == '-') {
+            minus = true;
+            c = getchar_unlocked();
+        }
+    }
+    using UnsignedInteger = std::make_unsigned_t<Integer>;
+    UnsignedInteger n = 0;
+    do { n = n * 10 + (c - '0'); } while (not isspace(c = getchar_unlocked()));
+    return minus ? -static_cast<Integer>(n) : static_cast<Integer>(n);
 }
 
 template <class Char, std::enable_if_t<std::is_same_v<Char, char>, int> = 0>
