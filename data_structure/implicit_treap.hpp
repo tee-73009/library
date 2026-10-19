@@ -1,6 +1,7 @@
 #pragma once
 #include "../template/template.hpp"
 #include "../util/xorshift.hpp"
+
 namespace tee {
 template <class S, S (*op)(S, S), S (*e)(), class F, S (*mapping)(F, S), F (*composition)(F, F), F (*id)()>
 struct ImplicitTreap {
@@ -222,4 +223,4 @@ struct ImplicitTreap {
         other.root = 0;
     }
 };
-}
+}  // namespace tee

@@ -1,23 +1,29 @@
 #pragma once
 #include "../template/template.hpp"
+
 namespace tee {
+
 // montgomery modint (MOD < 2^62, MOD is odd)
 struct fastmodint {
     using mint = fastmodint;
     using u64 = uint64_t;
     using u128 = __uint128_t;
     
-    // static menber
+    // static members
     static u64 MOD;
     static u64 INV_MOD;  // INV_MOD * MOD ≡ 1 (mod 2^64)
-    static u64 T128;  // 2^128 (mod MOD)
+    static u64 T128;     // 2^128 (mod MOD)
     
     // inner value
     u64 val;
     
     // constructor
     fastmodint() : val(0) { }
-    fastmodint(long long v) : val(reduce((u128(v) + MOD) * T128)) { }
+    fastmodint(long long v) {
+        u128 x = (v % (long long)MOD + MOD) % MOD;
+        val = reduce(x * T128);
+    }
+
     u64 get() const {
         u64 res = reduce(val);
         return res >= MOD ? res - MOD : res;
@@ -97,6 +103,7 @@ struct fastmodint {
         return r.inv();
     }
 };
-typename fastmodint::u64
-fastmodint::MOD, fastmodint::INV_MOD, fastmodint::T128;
-}
+
+inline typename fastmodint::u64 fastmodint::MOD, fastmodint::INV_MOD, fastmodint::T128;
+
+}  // namespace tee

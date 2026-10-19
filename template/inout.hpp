@@ -267,6 +267,13 @@ template <typename T, typename Alloc> struct is_vector<std::vector<T, Alloc>> : 
 template <typename T> struct is_pair : std::false_type {};
 template <typename T, typename U> struct is_pair<std::pair<T, U>> : std::true_type {};
 
+// modint 型判定用ヘルパー (.val() メソッドを持つか判定)
+template <typename T, typename = void>
+struct is_modint : std::false_type {};
+
+template <typename T>
+struct is_modint<T, std::void_t<decltype(std::declval<T>().val())>> : std::true_type {};
+
 template <typename T>
 struct is_fastio_primitive : std::disjunction<
     std::is_same<T, char>,
@@ -309,6 +316,9 @@ template <typename T>
 inline void read_single(T &t) {
     if constexpr (is_fastio_primitive<T>::value) {
         t = in<T>();
+    } else if constexpr (is_modint<T>::value) {
+        long long tmp = in<long long>();
+        t = tmp;
     } else if constexpr (is_vector<T>::value) {
         for (auto &x : t) read_single(x);
     } else if constexpr (is_pair<T>::value) {
@@ -358,6 +368,8 @@ template <typename T>
 inline void write_single(const T &t) {
     if constexpr (is_fastio_primitive<T>::value) {
         out(t);
+    } else if constexpr (is_modint<T>::value) {
+        out(t.val());
     } else if constexpr (is_vector<T>::value) {
         for (size_t i = 0; i < t.size(); ++i) {
             if (i > 0) putchar_unlocked(' ');
