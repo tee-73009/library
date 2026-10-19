@@ -4,7 +4,10 @@
 signed main() {
     ll n,q;
     fastio::input(n,q);
+    vll a(n);
+    fastio::input(a);
     BIT<ll> bit(n);
+    rep(i,n) bit.add(i,a[i]);
     while(q--){
         ll t;
         fastio::input(t);
