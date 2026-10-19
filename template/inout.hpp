@@ -1,6 +1,7 @@
 #ifndef LIB_TEMPLATE_INOUT_HPP
 #define LIB_TEMPLATE_INOUT_HPP
 #include "template.hpp"
+
 namespace std {
 //pair_out
 template <typename T, typename U>
@@ -244,7 +245,8 @@ void print(const T &t, const U &...u) {
     if (sizeof...(u)) cout << sep;
     print(u...);
 }
-}
+} // namespace std
+
 namespace tee {
 inline void debug_out() { cerr << "\n"; }
 template <typename T, class... U>
@@ -255,7 +257,26 @@ void debug_out(const T &t, const U &...u) {
 }
 #define debug(...) cerr << "L" << __LINE__ << " [" << #__VA_ARGS__ << "]: ", tee::debug_out(__VA_ARGS__)
 }  // namespace tee
+
 namespace fastio {
+
+// 型判定用ヘルパー
+template <typename T> struct is_vector : std::false_type {};
+template <typename T, typename Alloc> struct is_vector<std::vector<T, Alloc>> : std::true_type {};
+
+template <typename T> struct is_pair : std::false_type {};
+template <typename T, typename U> struct is_pair<std::pair<T, U>> : std::true_type {};
+
+template <typename T>
+struct is_fastio_primitive : std::disjunction<
+    std::is_same<T, char>,
+    std::is_same<T, std::string>,
+    std::is_integral<T>,
+    std::is_same<T, __int128_t>,
+    std::is_same<T, __uint128_t>
+> {};
+
+// 基本型の入力関数
 template <class Char, std::enable_if_t<std::is_same_v<Char, char>, int> = 0>
 inline Char in() { return getchar_unlocked(); }
 
@@ -283,6 +304,29 @@ inline Integer in() {
     return minus ? -static_cast<Integer>(n) : static_cast<Integer>(n);
 }
 
+// 再帰的・汎用的な入力処理
+template <typename T>
+inline void read_single(T &t) {
+    if constexpr (is_fastio_primitive<T>::value) {
+        t = in<T>();
+    } else if constexpr (is_vector<T>::value) {
+        for (auto &x : t) read_single(x);
+    } else if constexpr (is_pair<T>::value) {
+        read_single(t.first);
+        read_single(t.second);
+    } else {
+        std::cin >> t;
+    }
+}
+
+void input() {}
+template <typename T, class... U>
+void input(T &t, U &...u) {
+    read_single(t);
+    input(u...);
+}
+
+// 基本型の出力関数
 template <class Char, std::enable_if_t<std::is_same_v<Char, char>, int> = 0>
 inline void out(char c) { putchar_unlocked(c); }
 
@@ -291,7 +335,7 @@ inline void out(const std::string & s) { for (char c : s) putchar_unlocked(c); }
 
 template <class Integer, std::enable_if_t<std::is_integral_v<Integer> or std::is_same_v<Integer, __int128_t> or std::is_same_v<Integer, __uint128_t>, int> = 0>
 inline void out(Integer n) {
-    char s[45]; // 128bit整数の最大39桁に対応するためサイズを拡張
+    char s[45];
     int i = 0;
     using UnsignedInteger = std::conditional_t<std::is_same_v<Integer, __int128_t>, __uint128_t, std::make_unsigned_t<Integer>>;
     UnsignedInteger u;
@@ -309,18 +353,33 @@ inline void out(Integer n) {
     while (i) putchar_unlocked(s[--i] + '0');
 }
 
-void input() {}
-template <typename T, class... U>
-void input(T &t, U &...u) {
-    t = in<T>();
-    input(u...);
+// 再帰的・汎用的な出力処理
+template <typename T>
+inline void write_single(const T &t) {
+    if constexpr (is_fastio_primitive<T>::value) {
+        out(t);
+    } else if constexpr (is_vector<T>::value) {
+        for (size_t i = 0; i < t.size(); ++i) {
+            if (i > 0) putchar_unlocked(' ');
+            write_single(t[i]);
+        }
+    } else if constexpr (is_pair<T>::value) {
+        write_single(t.first);
+        putchar_unlocked(' ');
+        write_single(t.second);
+    } else {
+        std::cout << t;
+    }
 }
-void print() { out<char>('\n'); }
+
+void print() { putchar_unlocked('\n'); }
 template <typename T, class... U, char sep = ' '>
 void print(const T &t, const U &...u) {
-    out<T>(t);
-    if (sizeof...(u)) out<char>(sep);
+    write_single(t);
+    if (sizeof...(u)) putchar_unlocked(sep);
     print(u...);
 }
+
 }  // namespace fastio
+
 #endif
