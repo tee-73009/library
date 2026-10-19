@@ -253,11 +253,12 @@ void debug_out(const T &t, const U &...u) {
     if (sizeof...(u)) cerr << ", ";
     debug_out(u...);
 }
-}  // namespace tee
 #define debug(...) cerr << "L" << __LINE__ << " [" << #__VA_ARGS__ << "]: ", tee::debug_out(__VA_ARGS__)
+}  // namespace tee
 namespace fastio {
 template <class Char, std::enable_if_t<std::is_same_v<Char, char>, int> = 0>
 inline Char in() { return getchar_unlocked(); }
+
 template <class String, std::enable_if_t<std::is_same_v<String, std::string>, int> = 0>
 inline std::string in() {
     char c; do { c = getchar_unlocked(); } while (isspace(c));
@@ -265,17 +266,18 @@ inline std::string in() {
     do { s.push_back(c); } while (not isspace(c = getchar_unlocked()));
     return s;
 }
-template <class Integer, std::enable_if_t<std::is_integral_v<Integer> and not std::is_same_v<Integer, char>, int> = 0>
+
+template <class Integer, std::enable_if_t<std::is_integral_v<Integer> or std::is_same_v<Integer, __int128_t> or std::is_same_v<Integer, __uint128_t>, int> = 0>
 inline Integer in() {
     char c; do { c = getchar_unlocked(); } while (isspace(c));
     bool minus = false;
-    if constexpr (std::is_signed_v<Integer>) {
+    if constexpr (std::is_signed_v<Integer> or std::is_same_v<Integer, __int128_t>) {
         if (c == '-') {
             minus = true;
             c = getchar_unlocked();
         }
     }
-    using UnsignedInteger = std::make_unsigned_t<Integer>;
+    using UnsignedInteger = std::conditional_t<std::is_same_v<Integer, __int128_t>, __uint128_t, std::make_unsigned_t<Integer>>;
     UnsignedInteger n = 0;
     do { n = n * 10 + (c - '0'); } while (not isspace(c = getchar_unlocked()));
     return minus ? -static_cast<Integer>(n) : static_cast<Integer>(n);
@@ -283,27 +285,30 @@ inline Integer in() {
 
 template <class Char, std::enable_if_t<std::is_same_v<Char, char>, int> = 0>
 inline void out(char c) { putchar_unlocked(c); }
+
 template <class String, std::enable_if_t<std::is_same_v<String, std::string>, int> = 0>
 inline void out(const std::string & s) { for (char c : s) putchar_unlocked(c); }
-template <class Integer, std::enable_if_t<std::is_integral_v<Integer>, int> = 0>
+
+template <class Integer, std::enable_if_t<std::is_integral_v<Integer> or std::is_same_v<Integer, __int128_t> or std::is_same_v<Integer, __uint128_t>, int> = 0>
 inline void out(Integer n) {
-    char s[20];
+    char s[45]; // 128bit整数の最大39桁に対応するためサイズを拡張
     int i = 0;
-    if (std::is_signed<Integer>::value and n < 0) { putchar_unlocked('-'); n *= -1; }
-    do { s[i ++] = n % 10; n /= 10; } while (n);
-    while (i) putchar_unlocked(s[-- i] + '0');
+    using UnsignedInteger = std::conditional_t<std::is_same_v<Integer, __int128_t>, __uint128_t, std::make_unsigned_t<Integer>>;
+    UnsignedInteger u;
+    if constexpr (std::is_signed_v<Integer> or std::is_same_v<Integer, __int128_t>) {
+        if (n < 0) {
+            putchar_unlocked('-');
+            u = -static_cast<UnsignedInteger>(n);
+        } else {
+            u = static_cast<UnsignedInteger>(n);
+        }
+    } else {
+        u = n;
+    }
+    do { s[i++] = u % 10; u /= 10; } while (u);
+    while (i) putchar_unlocked(s[--i] + '0');
 }
-#define ini(...) int __VA_ARGS__; input(__VA_ARGS__);
-#define inl(...) long long __VA_ARGS__; input(__VA_ARGS__);
-#define ins(...) string __VA_ARGS__; input(__VA_ARGS__);
-#define inc(...) char __VA_ARGS__; input(__VA_ARGS__);
-#define ing(name,size,n) Graph name(size); rep(i,n){inl(a,b);a--;b--;name[a].pb(b);name[b].pb(a);}
-#define ing_on(name,size,n) Graph name(size); rep(i,n){inl(a,b);a--;b--;name[a].pb(b);}//有向
-#define ing_cost(name,size,n) Graph_cost name(size); rep(i,n){inl(a,b,c);a--;b--;name[a].pb({b,c});name[b].pb({a,c});}//コスト付き
-#define in1(s) for (int i = 0; i < (int)s.size();i++) input(s[i]);
-#define in2(s, t) for (int i = 0; i < (int)s.size(); i++) input(s[i], t[i]);
-#define in3(s, t, u) for (int i = 0; i < (int)s.size(); i++) input(s[i], t[i], u[i]);
-#define in4(s, t, u, v) for (int i = 0; i < (int)s.size(); i++) input(s[i], t[i], u[i], v[i]);
+
 void input() {}
 template <typename T, class... U>
 void input(T &t, U &...u) {
