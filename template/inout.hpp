@@ -236,14 +236,14 @@ void input() {}
 template <typename T, class... U>
 void input(T &t, U &...u) {
     cin >> t;
-    input(u...);
+    std::input(u...);
 }
 void print() { cout << "\n"; }
 template <typename T, class... U, char sep = ' '>
 void print(const T &t, const U &...u) {
     cout << t;
     if (sizeof...(u)) cout << sep;
-    print(u...);
+    std::print(u...);
 }
 } // namespace std
 
@@ -333,7 +333,7 @@ void input() {}
 template <typename T, class... U>
 void input(T &t, U &...u) {
     read_single(t);
-    input(u...);
+    fastio::input(u...);
 }
 
 // 基本型の出力関数
@@ -389,7 +389,7 @@ template <typename T, class... U, char sep = ' '>
 void print(const T &t, const U &...u) {
     write_single(t);
     if (sizeof...(u)) putchar_unlocked(sep);
-    print(u...);
+    fastio::print(u...);
 }
 
 }  // namespace fastio
