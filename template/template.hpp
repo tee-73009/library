@@ -1,10 +1,5 @@
 #pragma once
-#if defined(__x86_64__)
-#pragma GCC target("avx2")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
-#endif
-#pragma GCC optimize("O3")
-#pragma GCC optimize("unroll-loops")
+
 #include <algorithm>
 #include <array>
 #include <bitset>
@@ -54,10 +49,20 @@
 #include <utility>
 #include <vector>
 #include <ext/pb_ds/assoc_container.hpp>
+
+#if defined(__x86_64__)
+#pragma GCC target("avx2")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#endif
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
+
 using namespace std;
 using namespace __gnu_pbds;
+
 namespace tee {}
 using namespace tee;
+
 #include "macro.hpp"
 #include "inout.hpp"
 #include "arith_op.hpp"
