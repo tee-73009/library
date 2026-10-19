@@ -1,4 +1,4 @@
-#define PROBLEM "https://judge.yosupo.jp/problem/binomial_coefficient_prime_mod"
+// competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/binomial_coefficient_prime_mod
 #include "../template/template.hpp"
 #include "../math/combinatorics/nCk.hpp"
 signed main() {

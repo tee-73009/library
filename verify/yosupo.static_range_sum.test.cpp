@@ -1,4 +1,4 @@
-#define PROBLEM "https://judge.yosupo.jp/problem/static_range_sum"
+// competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/static_range_sum
 #include "../template/template.hpp"
 #include "../data_structure/disjointsparsetable.hpp"
 ll op(ll a, ll b) { return a + b; }
