@@ -9,7 +9,6 @@ signed main(){
         ll a,b,c;
         fastio::input(a,b,c);
         g[a].emplace_back(b,c);
-        g[b].emplace_back(a,c);
     }
     vpll dist;
     dijkstra(g,s,dist);

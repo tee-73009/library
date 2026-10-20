@@ -10,10 +10,10 @@ signed main(){
         fastio::input(s,t,d);
         G[s].push_back({t,d});
     }
-    vll dis;
+    vpll dis;
     dijkstra(G,r,dis);
     rep(i,v){
-        if(dis[i]==INF)fastio::print(string("INF"));
-        else fastio::print(dis[i]);
+        if(dis[i].fi==INF)fastio::print(string("INF"));
+        else fastio::print(dis[i].fi);
     }
 }
