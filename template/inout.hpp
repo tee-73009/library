@@ -286,31 +286,54 @@ struct is_fastio_primitive : std::disjunction<
 > {};
 
 // 基本型の入力関数
-template <class Char, std::enable_if_t<std::is_same_v<Char, char>, int> = 0>
-inline Char in() { return getchar_unlocked(); }
-
-template <class String, std::enable_if_t<std::is_same_v<String, std::string>, int> = 0>
-inline std::string in() {
-    char c; do { c = getchar_unlocked(); } while (isspace(c));
-    std::string s;
-    do { s.push_back(c); } while (not isspace(c = getchar_unlocked()));
-    return s;
+template <class T>
+inline T in() {
+    if constexpr (std::is_same_v<T, char>) {
+        return getchar_unlocked();
+    } else if constexpr (std::is_same_v<T, std::string>) {
+        char c; do { c = getchar_unlocked(); } while (isspace(c));
+        std::string s;
+        do { s.push_back(c); } while (not isspace(c = getchar_unlocked()));
+        return s;
+    } else if constexpr (std::is_integral_v<T> or std::is_same_v<T, __int128_t> or std::is_same_v<T, __uint128_t>) {
+        char c; do { c = getchar_unlocked(); } while (isspace(c));
+        bool minus = false;
+        if constexpr (std::is_signed_v<T> or std::is_same_v<T, __int128_t>) {
+            if (c == '-') {
+                minus = true;
+                c = getchar_unlocked();
+            }
+        }
+        using UnsignedInteger = std::conditional_t<std::is_same_v<T, __int128_t>, __uint128_t, std::make_unsigned_t<T>>;
+        UnsignedInteger n = 0;
+        do { n = n * 10 + (c - '0'); } while (not isspace(c = getchar_unlocked()));
+        return minus ? -static_cast<T>(n) : static_cast<T>(n);
+    }
 }
 
+// 基本型の出力関数 (通常の関数オーバーロードに変更)
+inline void out(char c) { putchar_unlocked(c); }
+inline void out(const std::string &s) { for (char c : s) putchar_unlocked(c); }
+inline void out(const char *s) { while (*s) putchar_unlocked(*s++); }
+
 template <class Integer, std::enable_if_t<std::is_integral_v<Integer> or std::is_same_v<Integer, __int128_t> or std::is_same_v<Integer, __uint128_t>, int> = 0>
-inline Integer in() {
-    char c; do { c = getchar_unlocked(); } while (isspace(c));
-    bool minus = false;
-    if constexpr (std::is_signed_v<Integer> or std::is_same_v<Integer, __int128_t>) {
-        if (c == '-') {
-            minus = true;
-            c = getchar_unlocked();
-        }
-    }
+inline void out(Integer n) {
+    char s[45];
+    int i = 0;
     using UnsignedInteger = std::conditional_t<std::is_same_v<Integer, __int128_t>, __uint128_t, std::make_unsigned_t<Integer>>;
-    UnsignedInteger n = 0;
-    do { n = n * 10 + (c - '0'); } while (not isspace(c = getchar_unlocked()));
-    return minus ? -static_cast<Integer>(n) : static_cast<Integer>(n);
+    UnsignedInteger u;
+    if constexpr (std::is_signed_v<Integer> or std::is_same_v<Integer, __int128_t>) {
+        if (n < 0) {
+            putchar_unlocked('-');
+            u = -static_cast<UnsignedInteger>(n);
+        } else {
+            u = static_cast<UnsignedInteger>(n);
+        }
+    } else {
+        u = n;
+    }
+    do { s[i++] = u % 10; u /= 10; } while (u);
+    while (i) putchar_unlocked(s[--i] + '0');
 }
 
 // 再帰的・汎用的な入力処理
@@ -336,33 +359,6 @@ template <typename T, class... U>
 inline void input(T &t, U &...u) {
     read_single(t);
     fastio::input(u...);
-}
-
-// 基本型の出力関数
-template <class Char, std::enable_if_t<std::is_same_v<Char, char>, int> = 0>
-inline void out(char c) { putchar_unlocked(c); }
-
-template <class String, std::enable_if_t<std::is_same_v<String, std::string>, int> = 0>
-inline void out(const std::string & s) { for (char c : s) putchar_unlocked(c); }
-
-template <class Integer, std::enable_if_t<std::is_integral_v<Integer> or std::is_same_v<Integer, __int128_t> or std::is_same_v<Integer, __uint128_t>, int> = 0>
-inline void out(Integer n) {
-    char s[45];
-    int i = 0;
-    using UnsignedInteger = std::conditional_t<std::is_same_v<Integer, __int128_t>, __uint128_t, std::make_unsigned_t<Integer>>;
-    UnsignedInteger u;
-    if constexpr (std::is_signed_v<Integer> or std::is_same_v<Integer, __int128_t>) {
-        if (n < 0) {
-            putchar_unlocked('-');
-            u = -static_cast<UnsignedInteger>(n);
-        } else {
-            u = static_cast<UnsignedInteger>(n);
-        }
-    } else {
-        u = n;
-    }
-    do { s[i++] = u % 10; u /= 10; } while (u);
-    while (i) putchar_unlocked(s[--i] + '0');
 }
 
 // 再帰的・汎用的な出力処理
