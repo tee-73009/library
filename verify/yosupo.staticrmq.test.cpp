@@ -1,15 +1,13 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/staticrmq
 #include "../template/template.hpp"
 #include "../data_structure/sparsetable.hpp"
-ll op(ll i,ll j){
-    return min(i,j);
-}
-signed main() {
+int op(int a,int b){return min(a,b);}
+signed main(){
     ll n,q;
     fastio::input(n,q);
-    vll a(n);
-    fastio::input(a);
-    SparseTable<ll,op> table(a);
+    vector<int> a(n);
+    rep(i,n)fastio::input(a[i]);
+    SparseTable<int,op> table(a);
     while(q--){
         ll l,r;
         fastio::input(l,r);

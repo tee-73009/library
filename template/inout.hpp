@@ -367,7 +367,7 @@ inline void out(Integer n) {
 template <typename T>
 inline void write_single(const T &t) {
     if constexpr (is_fastio_primitive<T>::value) {
-        out(t);
+        out<T>(t);
     } else if constexpr (is_modint<T>::value) {
         out(t.val());
     } else if constexpr (is_vector<T>::value) {

@@ -1,6 +1,6 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/many_aplusb_128bit
 #include "../template/template.hpp"
-signed main() {
+signed main(){
     ll t;
     fastio::input(t);
     while(t--){

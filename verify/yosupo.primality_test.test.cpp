@@ -1,12 +1,12 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/primality_test
 #include "../template/template.hpp"
 #include "../math/number-theory/is_prime.hpp"
-signed main() {
+signed main(){
     ll t;
     fastio::input(t);
     while(t--){
         ll a;
         fastio::input(a);
-        fastio::print(is_prime(a)?"Yes":"No");
+        fastio::print(string(is_prime(a)?"Yes":"No"));
     }
 }
