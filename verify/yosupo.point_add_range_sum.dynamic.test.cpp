@@ -1,12 +1,12 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/point_add_range_sum
 #include "../template/template.hpp"
-#include "../data_structure/segtree/dynamic_segtree.hpp"
+#include "../data_structure/dynamic_segtree.hpp"
 ll op(ll a,ll b){return a+b;}
 ll e(){return 0;}
 signed main(){
     ll n,q;
     fastio::input(n,q);
-    DynamicSegTree<ll,op,e> seg(n);
+    DynamicSegtree<ll,op,e> seg(n);
     rep(i,n){
         ll a;
         fastio::input(a);

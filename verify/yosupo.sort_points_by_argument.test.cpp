@@ -1,6 +1,6 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/sort_points_by_argument
 #include "../template/template.hpp"
-#include "../geometry/geometry.hpp"
+#include "../math/geometry/geometry.hpp"
 signed main(){
     ll n;
     fastio::input(n);
