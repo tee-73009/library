@@ -4,7 +4,7 @@
 using S=pair<ll,ll>;
 using F=pair<ll,ll>;
 S mapping(F f,S x){return{(f.first*x.first+f.second*x.second)%mod,x.second};}
-F composition(F f,F g){return{f.first*g.first%mod,(f.first*g.second+f.second)%mod};}
+F composition(F f,F g){return{g.first*f.first%mod,(g.first*f.second+g.second)%mod};}
 F id(){return{1,0};}
 signed main(){
     ll n,q;
