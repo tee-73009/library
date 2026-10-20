@@ -1,6 +1,6 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/range_kth_smallest
 #include "../template/template.hpp"
-#include "../data_structure/segtree/persistent_segtree.hpp"
+#include "../data_structure/persistent_segtree.hpp"
 int op(int a,int b){return a+b;}
 int e(){return 0;}
 signed main(){
@@ -12,7 +12,7 @@ signed main(){
     sort(s.begin(),s.end());
     s.erase(unique(s.begin(),s.end()),s.end());
     int m=s.size();
-    PersistentSegTree<int,op,e> seg(m);  // 版 i = 先頭 i 個を入れた状態
+    PersistentSegtree<int,op,e> seg(m);  // 版 i = 先頭 i 個を入れた状態
     vector<int> ver={0};
     rep(i,n){
         int k=lower_bound(s.begin(),s.end(),a[i])-s.begin();
