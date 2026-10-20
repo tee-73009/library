@@ -1,5 +1,5 @@
-#define PROBLEM "https://onlinejudge.u-aizu.ac.jp/courses/library/4/CGL/5/CGL_5_A"
-#define ERROR "0.000001"
+// competitive-verifier: PROBLEM https://onlinejudge.u-aizu.ac.jp/courses/library/4/CGL/5/CGL_5_A
+// competitive-verifier: ERROR 0.000001
 #include "../template/template.hpp"
 #include "../math/geometry/geometry.hpp"
 signed main(){

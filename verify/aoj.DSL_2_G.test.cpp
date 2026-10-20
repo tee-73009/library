@@ -1,4 +1,4 @@
-#define PROBLEM "https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_G"
+// competitive-verifier: PROBLEM https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_G
 #include "../template/template.hpp"
 #include "../data_structure/dynamic_lazysegtree.hpp"
 using S=pair<ll,ll>;  // (和,長さ)
