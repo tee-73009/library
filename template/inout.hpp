@@ -79,7 +79,8 @@ ostream &operator<<(ostream &os, const vector<vector<T>> &v)
 {
     for (int i = 0; i < (int)v.size(); i++)
     {
-        os << v[i] << endl;
+        if (i > 0) os << endl;
+        os << v[i];
     }
     return os;
 }
@@ -232,15 +233,16 @@ istream &operator>>(istream &a, Real1024 &b){
 #define in2(s, t) for (int i = 0; i < (int)s.size(); i++) input(s[i], t[i]);
 #define in3(s, t, u) for (int i = 0; i < (int)s.size(); i++) input(s[i], t[i], u[i]);
 #define in4(s, t, u, v) for (int i = 0; i < (int)s.size(); i++) input(s[i], t[i], u[i], v[i]);
-void input() {}
+
+inline void input() {}
 template <typename T, class... U>
-void input(T &t, U &...u) {
+inline void input(T &t, U &...u) {
     cin >> t;
     std::input(u...);
 }
-void print() { cout << "\n"; }
+inline void print() { cout << "\n"; }
 template <typename T, class... U, char sep = ' '>
-void print(const T &t, const U &...u) {
+inline void print(const T &t, const U &...u) {
     cout << t;
     if (sizeof...(u)) cout << sep;
     std::print(u...);
@@ -329,9 +331,9 @@ inline void read_single(T &t) {
     }
 }
 
-void input() {}
+inline void input() {}
 template <typename T, class... U>
-void input(T &t, U &...u) {
+inline void input(T &t, U &...u) {
     read_single(t);
     fastio::input(u...);
 }
@@ -367,13 +369,21 @@ inline void out(Integer n) {
 template <typename T>
 inline void write_single(const T &t) {
     if constexpr (is_fastio_primitive<T>::value) {
-        out<T>(t);
+        out(t);
     } else if constexpr (is_modint<T>::value) {
         out(t.val());
     } else if constexpr (is_vector<T>::value) {
-        for (size_t i = 0; i < t.size(); ++i) {
-            if (i > 0) putchar_unlocked(' ');
-            write_single(t[i]);
+        using ElementType = typename T::value_type;
+        if constexpr (is_vector<ElementType>::value) {
+            for (size_t i = 0; i < t.size(); ++i) {
+                if (i > 0) putchar_unlocked('\n');
+                write_single(t[i]);
+            }
+        } else {
+            for (size_t i = 0; i < t.size(); ++i) {
+                if (i > 0) putchar_unlocked(' ');
+                write_single(t[i]);
+            }
         }
     } else if constexpr (is_pair<T>::value) {
         write_single(t.first);
@@ -384,9 +394,9 @@ inline void write_single(const T &t) {
     }
 }
 
-void print() { putchar_unlocked('\n'); }
+inline void print() { putchar_unlocked('\n'); }
 template <typename T, class... U, char sep = ' '>
-void print(const T &t, const U &...u) {
+inline void print(const T &t, const U &...u) {
     write_single(t);
     if (sizeof...(u)) putchar_unlocked(sep);
     fastio::print(u...);
