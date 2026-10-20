@@ -17,11 +17,9 @@ signed main(){
         return 0;
     }
     vll res={t};
-    while(res.back()!=s){
-        ll v=res.back();
-        res.emplace_back(dist[v].second);
-    }
+    while(res.back()!=s)res.emplace_back(dist[res.back()].second);
     reverse(all(res));
-    fastio::print(res);
-    return 0;
+    ll k=res.size()-1;
+    fastio::print(dist[t].first,k);
+    rep(i,k)fastio::print(res[i],res[i+1]);
 }

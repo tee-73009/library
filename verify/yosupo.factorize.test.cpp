@@ -8,11 +8,11 @@ signed main(){
         ll a;
         fastio::input(a);
         auto ans=prime_factorize(a);
-        fastio::out<ll>(ans.size());
+        fastio::print(ans.size());
         for(ll p:ans){
-            fastio::out<char>(' ');
-            fastio::out<ll>(p);
+            fastio::print(' ');
+            fastio::print(p);
         }
-        fastio::out<char>('\n');
+        fastio::print('\n');
     }
 }

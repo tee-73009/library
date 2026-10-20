@@ -1,5 +1,5 @@
 #pragma once
-
+//link: https://tee-73009.github.io/library/
 #include <algorithm>
 #include <array>
 #include <bitset>

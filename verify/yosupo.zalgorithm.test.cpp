@@ -7,7 +7,7 @@ signed main(){
     RollingHash rh(s);
     int n=s.size();
     rep(i,n){
-        fastio::out<ll>(rh.getLCP(0,i));
-        fastio::out<char>(i+1<n?' ':'\n');
+        fastio::print(rh.getLCP(0,i));
+        fastio::print(i+1<n?' ':'\n');
     }
 }
