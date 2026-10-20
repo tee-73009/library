@@ -12,7 +12,7 @@ void dijkstra(const vector<vector<pll>> &G, int s, vpll &dis) {
         for (auto [e,c] : G[v]) {
             ll dp = dis[v].fi + c;
             if(dis[e].fi>dp) {
-                dis[e] = {dp, c};
+                dis[e] = {dp, v};
                 pq.emplace(dp, e);
 
             }
