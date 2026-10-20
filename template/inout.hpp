@@ -295,7 +295,7 @@ inline T in() {
         std::string s;
         do { s.push_back(c); } while (not isspace(c = getchar_unlocked()));
         return s;
-    } else if constexpr (std::is_integral_v<T> or std::is_same_v<T, __int128_t> or std::is_same_v<T, __uint128_t>) {
+    } else if constexpr ((std::is_integral_v<T> and not std::is_same_v<T, char>) or std::is_same_v<T, __int128_t> or std::is_same_v<T, __uint128_t>) {
         char c; do { c = getchar_unlocked(); } while (isspace(c));
         bool minus = false;
         if constexpr (std::is_signed_v<T> or std::is_same_v<T, __int128_t>) {
@@ -311,12 +311,15 @@ inline T in() {
     }
 }
 
-// 基本型の出力関数 (通常の関数オーバーロードに変更)
+// 基本型の出力関数 (char 型を数値出力テンプレートから厳密に排除)
 inline void out(char c) { putchar_unlocked(c); }
 inline void out(const std::string &s) { for (char c : s) putchar_unlocked(c); }
 inline void out(const char *s) { while (*s) putchar_unlocked(*s++); }
 
-template <class Integer, std::enable_if_t<std::is_integral_v<Integer> or std::is_same_v<Integer, __int128_t> or std::is_same_v<Integer, __uint128_t>, int> = 0>
+template <class Integer, std::enable_if_t<
+    ((std::is_integral_v<Integer> and not std::is_same_v<Integer, char>) or 
+     std::is_same_v<Integer, __int128_t> or 
+     std::is_same_v<Integer, __uint128_t>), int> = 0>
 inline void out(Integer n) {
     char s[45];
     int i = 0;
