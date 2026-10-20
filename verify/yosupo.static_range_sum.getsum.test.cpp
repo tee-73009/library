@@ -11,6 +11,6 @@ signed main(){
     while(q--){
         ll l,r;
         fastio::input(l,r);
-        fastio::print(ar[r]-ar[l-1]);
+        fastio::print(ar[r+1]-ar[l]);
     }
 }

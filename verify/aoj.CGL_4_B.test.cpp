@@ -5,7 +5,7 @@
 signed main(){
     ll n;
     fastio::input(n);
-    vector<pll> p(n);
+    vector<pair<ld,ld>> p(n);
     rep(i,n)fastio::input(p[i].first,p[i].second);
     cout<<fixed<<setprecision(10)<<sqrtl((ld)diameter2(p))<<"\n";
 }
