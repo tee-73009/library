@@ -19,7 +19,7 @@ signed main(){
             }
             else{
                 uf.unite(u,v,x);
-                print(0);
+                fastio::print(1);
             }
         }
         else{

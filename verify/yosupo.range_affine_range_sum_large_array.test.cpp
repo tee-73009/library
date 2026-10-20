@@ -3,7 +3,7 @@
 #include "../data_structure/dynamic_lazysegtree.hpp"
 using S=pair<ll,ll>;
 using F=pair<ll,ll>;
-S op(S a,S b){return{(a.first+b.first)%mod,a.second+b.second};}
+S op(S a,S b){return{(a.first+b.first)%mod,(a.second+b.second)%mod};}
 S e(){return{0,0};}
 S mapping(F f,S x){return{(f.first*x.first+f.second*x.second)%mod,x.second};}
 F composition(F f,F g){return{f.first*g.first%mod,(f.first*g.second+f.second)%mod};}
