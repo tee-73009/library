@@ -304,7 +304,15 @@ inline T in() {
                 c = getchar_unlocked();
             }
         }
-        using UnsignedInteger = std::conditional_t<std::is_same_v<T, __int128_t>, __uint128_t, std::make_unsigned_t<T>>;
+        using UnsignedInteger = std::conditional_t<
+            std::is_same_v<T, __int128_t> or std::is_same_v<T, __uint128_t>,
+            __uint128_t,
+            std::make_unsigned_t<std::conditional_t<
+                std::is_same_v<T, __int128_t> or std::is_same_v<T, __uint128_t>,
+                unsigned int,
+                T
+            >>
+        >;
         UnsignedInteger n = 0;
         do { n = n * 10 + (c - '0'); } while (not isspace(c = getchar_unlocked()));
         return minus ? -static_cast<T>(n) : static_cast<T>(n);
@@ -323,7 +331,15 @@ template <class Integer, std::enable_if_t<
 inline void out(Integer n) {
     char s[45];
     int i = 0;
-    using UnsignedInteger = std::conditional_t<std::is_same_v<Integer, __int128_t>, __uint128_t, std::make_unsigned_t<Integer>>;
+    using UnsignedInteger = std::conditional_t<
+        std::is_same_v<Integer, __int128_t> or std::is_same_v<Integer, __uint128_t>,
+        __uint128_t,
+        std::make_unsigned_t<std::conditional_t<
+            std::is_same_v<Integer, __int128_t> or std::is_same_v<Integer, __uint128_t>,
+            unsigned int,
+            Integer
+        >>
+    >;
     UnsignedInteger u;
     if constexpr (std::is_signed_v<Integer> or std::is_same_v<Integer, __int128_t>) {
         if (n < 0) {

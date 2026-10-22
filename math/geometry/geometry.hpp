@@ -1,20 +1,10 @@
 #pragma once
 #include "../../template/template.hpp"
 namespace tee {
-// ============================================================
-// 幾何ライブラリ (pair 版)
-//   点・ベクトルは新しい型を作らず pair<T, T> (T = long long なら pll、long double なら pair<ld, ld>) で表す
-//   x 座標は .first、y 座標は .second
-//   足し算・引き算・定数倍は template/pair_op.hpp の演算子を使う (a + b, a - b, -a, a * k)
-//   直線・線分・円も型を作らず、端点・中心などを引数で直接渡す
-//     線分 ab と線分 cd なら (a, b, c, d)、円なら中心 c と半径 r
-//   整数座標 (pll) ならほとんどの判定が厳密。実数の判定は EPS を使う
-// ============================================================
 inline long double EPS = 1e-10;
 inline long double torad(long double deg) { return deg * PI / 180; }
 inline long double todeg(long double ang) { return ang * 180 / PI; }
 
-// 符号 (-1, 0, 1)。整数なら厳密、実数なら EPS 以内を 0 とみなす
 template <class T>
 int sgn(T x) {
     if constexpr (is_integral_v<T>) return (x > 0) - (x < 0);
@@ -23,45 +13,34 @@ int sgn(T x) {
 template <class T>
 pair<long double, long double> to_ld(const pair<T, T> &p) { return {(long double)p.first, (long double)p.second}; }
 
-// ------------------------------------------------------------
-// ベクトルの基本演算
-// ------------------------------------------------------------
 template <class T>
 T dot(const pair<T, T> &a, const pair<T, T> &b) { return a.first * b.first + a.second * b.second; }
 template <class T>
 T cross(const pair<T, T> &a, const pair<T, T> &b) { return a.first * b.second - a.second * b.first; }
-// 点 a から見た、b と c の外積 (b - a) x (c - a)
 template <class T>
 T cross(const pair<T, T> &a, const pair<T, T> &b, const pair<T, T> &c) { return cross(b - a, c - a); }
 template <class T>
 T norm(const pair<T, T> &a) { return dot(a, a); }
 template <class T>
 long double abs(const pair<T, T> &a) { return sqrtl((long double)norm(a)); }
-// 偏角 (-π, π]。原点では 0
 template <class T>
 long double arg(const pair<T, T> &a) {
     if (sgn(a.first) == 0 && sgn(a.second) == 0) return 0;
     return atan2l((long double)a.second, (long double)a.first);
 }
-// 2 点が (EPS 以内で) 等しいか
 template <class T>
 bool eq(const pair<T, T> &a, const pair<T, T> &b) {
     if constexpr (is_integral_v<T>) return a == b;
     else return abs(a - b) <= EPS;
 }
-// 反時計回りに 90 度回転
 template <class T>
 pair<T, T> rot90(const pair<T, T> &a) { return {-a.second, a.first}; }
-// 反時計回りに ang ラジアン回転
 template <class T>
 pair<long double, long double> rot(const pair<T, T> &a, long double ang) {
     long double c = cosl(ang), s = sinl(ang), x = a.first, y = a.second;
     return {c * x - s * y, s * x + c * y};
 }
 
-// ------------------------------------------------------------
-// 偏角ソート (-π < arg <= π、同じ偏角なら原点に近い順)。原点の偏角は 0 として扱う。整数座標なら厳密
-// ------------------------------------------------------------
 template <class T>
 void arg_sort(vector<pair<T, T>> &v) {
     auto half = [](const pair<T, T> &p) {  // 偏角が (-π, 0] の側: 0, 原点: 1, 偏角が (0, π] の側: 2
@@ -77,12 +56,10 @@ void arg_sort(vector<pair<T, T>> &v) {
     });
 }
 
-// ------------------------------------------------------------
-// 3 点の位置関係: a, b を結ぶ線に対する c の位置
-//   COUNTER_CLOCKWISE(1): c が左側、CLOCKWISE(-1): c が右側
-//   ONLINE_BACK(2): c, a, b の順に一直線、ONLINE_FRONT(-2): a, b, c の順に一直線
-//   ON_SEGMENT(0): c が線分 ab 上
-// ------------------------------------------------------------
+//a, b を結ぶ線に対する c の位置
+//COUNTER_CLOCKWISE(1): c が左側、CLOCKWISE(-1): c が右側
+//ONLINE_BACK(2): c, a, b の順に一直線、ONLINE_FRONT(-2): a, b, c の順に一直線
+//ON_SEGMENT(0): c が線分 ab 上
 constexpr int COUNTER_CLOCKWISE = 1, CLOCKWISE = -1, ONLINE_BACK = 2, ONLINE_FRONT = -2, ON_SEGMENT = 0;
 template <class T>
 int ccw(const pair<T, T> &a, const pair<T, T> &b, const pair<T, T> &c) {
@@ -95,10 +72,7 @@ int ccw(const pair<T, T> &a, const pair<T, T> &b, const pair<T, T> &c) {
     return ON_SEGMENT;
 }
 
-// ------------------------------------------------------------
 // 直線 ab ・線分 ab
-// ------------------------------------------------------------
-// 直線 ab と直線 cd が平行 / 垂直か
 template <class T>
 bool is_parallel(const pair<T, T> &a, const pair<T, T> &b, const pair<T, T> &c, const pair<T, T> &d) {
     return sgn(cross(b - a, d - c)) == 0;
@@ -107,7 +81,6 @@ template <class T>
 bool is_orthogonal(const pair<T, T> &a, const pair<T, T> &b, const pair<T, T> &c, const pair<T, T> &d) {
     return sgn(dot(b - a, d - c)) == 0;
 }
-// 点 p から直線 ab へ下ろした垂線の足 / p の直線 ab に関する反射
 template <class T>
 pair<long double, long double> projection(const pair<T, T> &a, const pair<T, T> &b, const pair<T, T> &p) {
     auto A = to_ld(a), B = to_ld(b), P = to_ld(p);
@@ -118,12 +91,10 @@ pair<long double, long double> reflection(const pair<T, T> &a, const pair<T, T> 
     auto pr = projection(a, b, p);
     return pr + (pr - to_ld(p));
 }
-// 点 p が線分 ab 上にあるか
 template <class T>
 bool on_segment(const pair<T, T> &a, const pair<T, T> &b, const pair<T, T> &p) {
     return ccw(a, b, p) == ON_SEGMENT;
 }
-// 線分 ab と線分 cd が (端点を含めて) 共有点をもつか
 template <class T>
 bool intersect(const pair<T, T> &a, const pair<T, T> &b, const pair<T, T> &c, const pair<T, T> &d) {
     if (eq(a, b)) return ccw(c, d, a) == ON_SEGMENT;  // 長さ 0 の線分 (点)
@@ -159,10 +130,7 @@ long double distance_ss(const pair<T, T> &a, const pair<T, T> &b, const pair<T, 
     return min({distance_sp(a, b, c), distance_sp(a, b, d), distance_sp(c, d, a), distance_sp(c, d, b)});
 }
 
-// ------------------------------------------------------------
 // 多角形 (頂点を順に並べた vector<pair<T, T>>)
-// ------------------------------------------------------------
-// 符号付き面積の 2 倍 (反時計回りで正)。整数座標なら厳密
 template <class T>
 T polygon_area2(const vector<pair<T, T>> &p) {
     T res = 0;
@@ -185,7 +153,7 @@ int contains(const vector<pair<T, T>> &poly, const pair<T, T> &p) {
     }
     return in ? 2 : 0;
 }
-// 凸包 (Andrew's monotone chain)。反時計回り、x が最小 (同じなら y が最小) の点から。O(N log N)
+// 凸包 反時計回り、x が最小 (同じなら y が最小) の点から O(N log N)
 //   keep_collinear = false: 辺上の点を含めない、true: 含める
 template <class T>
 vector<pair<T, T>> convex_hull(vector<pair<T, T>> ps, bool keep_collinear = false) {
@@ -271,9 +239,7 @@ T closest_pair2(vector<pair<T, T>> ps) {
     return rec(0, n);
 }
 
-// ------------------------------------------------------------
 // 円 (中心 c と半径 r を引数で渡す)
-// ------------------------------------------------------------
 // 2 円の共通接線の本数 (4: 離れている, 3: 外接, 2: 交わる, 1: 内接, 0: 一方が他方を含む)
 template <class T>
 int common_tangent_count(const pair<T, T> &c1, long double r1, const pair<T, T> &c2, long double r2) {
@@ -316,12 +282,5 @@ vector<pair<long double, long double>> crosspoint_cc(const pair<T, T> &c1, long 
     vector<pair<long double, long double>> res = {p + perp * h, p - perp * h};
     sort(res.begin(), res.end());
     return res;
-}
-
-// 旧 template/func.hpp からの互換用
-inline ld Dis(ll ax, ll ay, ll bx, ll by) { return hypotl(ax - bx, ay - by); }
-// 三点 (x0,y0),(x1,y1),(x2,y2) について、外積の絶対値(平行四辺形の面積、三角形の面積の2倍)を返す
-inline ll he(ll x0, ll y0, ll x1, ll y1, ll x2, ll y2) {
-    return llabs((x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0));
 }
 }  // namespace tee
