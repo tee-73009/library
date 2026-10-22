@@ -1,114 +1,95 @@
 #pragma once
 #include "../template/template.hpp"
 namespace tee {
-template <class Monoid>
-struct SegTree {
-    using Func = function<Monoid(Monoid, Monoid)>;
-    int N;
-    Func F;
-    Monoid IDENTITY;
-    int SIZE_R;
-    vector<Monoid> dat;
-
-    /* initialization */
-    SegTree() {}
-    SegTree(int n, const Func f, const Monoid& identity)
-        : N(n), F(f), IDENTITY(identity) {
-        SIZE_R = 1;
-        while (SIZE_R < n) SIZE_R *= 2;
-        dat.assign(SIZE_R * 2, IDENTITY);
+template <class S, S (*op)(S, S), S (*e)()>
+struct Segtree {
+  public:
+    Segtree() : Segtree(0) {}
+    explicit Segtree(int n) : Segtree(vector<S>(n, e())) {}
+    explicit Segtree(const vector<S> &v) : _n(int(v.size())) {
+        sz = 1, log = 0;
+        while (sz < _n) sz <<= 1, log++;
+        d = vector<S>(2 * sz, e());
+        for (int i = 0; i < _n; i++) d[sz + i] = v[i];
+        for (int i = sz - 1; i >= 1; i--) update(i);
     }
-    void init(int n, const Func f, const Monoid& identity) {
-        N = n;
-        F = f;
-        IDENTITY = identity;
-        SIZE_R = 1;
-        while (SIZE_R < n) SIZE_R *= 2;
-        dat.assign(SIZE_R * 2, IDENTITY);
+    int size() const { return _n; }
+    void set(int p, S x) {
+        assert(0 <= p && p < _n);
+        p += sz;
+        d[p] = x;
+        for (int i = 1; i <= log; i++) update(p >> i);
     }
-
-    /* set, a is 0-indexed */
-    /* build(): O(N) */
-    void set(int a, const Monoid& v) { dat[a + SIZE_R] = v; }
-    void build() {
-        for (int k = SIZE_R - 1; k > 0; --k)
-            dat[k] = F(dat[k * 2], dat[k * 2 + 1]);
+    S get(int p) const {
+        assert(0 <= p && p < _n);
+        return d[p + sz];
     }
-
-    /* update a, a is 0-indexed, O(log N) */
-    void update(int a, const Monoid& v) {
-        int k = a + SIZE_R;
-        dat[k] = v;
-        while (k >>= 1) dat[k] = F(dat[k * 2], dat[k * 2 + 1]);
-    }
-
-    /* get [a, b), a and b are 0-indexed, O(log N) */
-    Monoid get(int a, int b) {
-        Monoid vleft = IDENTITY, vright = IDENTITY;
-        for (int left = a + SIZE_R, right = b + SIZE_R; left < right;
-             left >>= 1, right >>= 1) {
-            if (left & 1) vleft = F(vleft, dat[left++]);
-            if (right & 1) vright = F(dat[--right], vright);
+    S prod(int l, int r) const {
+        assert(0 <= l && l <= r && r <= _n);
+        S sml = e(), smr = e();
+        l += sz, r += sz;
+        while (l < r) {
+            if (l & 1) sml = op(sml, d[l++]);
+            if (r & 1) smr = op(d[--r], smr);
+            l >>= 1, r >>= 1;
         }
-        return F(vleft, vright);
+        return op(sml, smr);
     }
-    Monoid all_get() { return dat[1]; }
-    Monoid operator[](int a) { return dat[a + SIZE_R]; }
-
-    /* get max r that f(get(l, r)) = True (0-indexed), O(log N) */
-    /* f(IDENTITY) need to be True */
-    int max_right(const function<bool(Monoid)> f, int l = 0) {
-        if (l == N) return N;
-        l += SIZE_R;
-        Monoid sum = IDENTITY;
+    S all_prod() const { return d[1]; }
+    template <bool (*f)(S)>
+    int max_right(int l) const {
+        return max_right(l, [](S x) { return f(x); });
+    }
+    template <class G>
+    int max_right(int l, G f) const {
+        assert(0 <= l && l <= _n);
+        assert(f(e()));
+        if (l == _n) return _n;
+        l += sz;
+        S sm = e();
         do {
             while (l % 2 == 0) l >>= 1;
-            if (!f(F(sum, dat[l]))) {
-                while (l < SIZE_R) {
-                    l = l * 2;
-                    if (f(F(sum, dat[l]))) {
-                        sum = F(sum, dat[l]);
-                        ++l;
-                    }
+            if (!f(op(sm, d[l]))) {
+                while (l < sz) {
+                    l = 2 * l;
+                    if (f(op(sm, d[l]))) sm = op(sm, d[l++]);
                 }
-                return l - SIZE_R;
+                return l - sz;
             }
-            sum = F(sum, dat[l]);
-            ++l;
+            sm = op(sm, d[l++]);
         } while ((l & -l) != l);
-        return N;
+        return _n;
     }
-
-    /* get min l that f(get(l, r)) = True (0-indexed), O(log N) */
-    /* f(IDENTITY) need to be True */
-    int min_left(const function<bool(Monoid)> f, int r = -1) {
+    template <bool (*f)(S)>
+    int min_left(int r) const {
+        return min_left(r, [](S x) { return f(x); });
+    }
+    template <class G>
+    int min_left(int r, G f) const {
+        assert(0 <= r && r <= _n);
+        assert(f(e()));
         if (r == 0) return 0;
-        if (r == -1) r = N;
-        r += SIZE_R;
-        Monoid sum = IDENTITY;
+        r += sz;
+        S sm = e();
         do {
-            --r;
+            r--;
             while (r > 1 && (r % 2)) r >>= 1;
-            if (!f(F(dat[r], sum))) {
-                while (r < SIZE_R) {
-                    r = r * 2 + 1;
-                    if (f(F(dat[r], sum))) {
-                        sum = F(dat[r], sum);
-                        --r;
-                    }
+            if (!f(op(d[r], sm))) {
+                while (r < sz) {
+                    r = 2 * r + 1;
+                    if (f(op(d[r], sm))) sm = op(d[r--], sm);
                 }
-                return r + 1 - SIZE_R;
+                return r + 1 - sz;
             }
-            sum = F(dat[r], sum);
+            sm = op(d[r], sm);
         } while ((r & -r) != r);
         return 0;
     }
+    vector<S> to_vector() const { return vector<S>(d.begin() + sz, d.begin() + sz + _n); }
 
-    friend ostream& operator<<(ostream& os, SegTree seg) {
-        for (int i = 0; i < seg.N; i++) {
-            os << seg.get(i, i + 1) << " ";
-        }
-        return os;
-    }
+  private:
+    int _n, sz, log;
+    vector<S> d;
+    void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
 };
 }

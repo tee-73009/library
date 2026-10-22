@@ -1,89 +1,152 @@
 #pragma once
 #include "../template/template.hpp"
 namespace tee {
-template <class Monoid, class Action>
-struct Lazy_SegTree {
-    using FuncMonoid = function<Monoid(Monoid, Monoid)>;
-    using FuncAction = function<void(Monoid&, Action)>;
-    using FuncComposition = function<void(Action&, Action)>;
-    FuncMonoid FM;
-    FuncAction FA;
-    FuncComposition FC;
-    Monoid IDENTITY_MONOID;
-    Action IDENTITY_LAZY;
-    int N, SIZE, HEIGHT;
-    vector<Monoid> dat;
-    vector<Action> lazy;
-
-    Lazy_SegTree() {}
-    Lazy_SegTree(int n, const FuncMonoid fm, const FuncAction fa,
-                 const FuncComposition fc,
-                 const Monoid& identity_monoid, const Action& identity_lazy)
-        : FM(fm), FA(fa), FC(fc), IDENTITY_MONOID(identity_monoid), IDENTITY_LAZY(identity_lazy), N(n) {
-        SIZE = 1, HEIGHT = 0;
-        while (SIZE < n) SIZE <<= 1, ++HEIGHT;
-        dat.assign(SIZE * 2, IDENTITY_MONOID);
-        lazy.assign(SIZE * 2, IDENTITY_LAZY);
+template <class S, S (*op)(S, S), S (*e)(), class F, S (*mapping)(F, S), F (*composition)(F, F), F (*id)()>
+struct LazySegtree {
+  public:
+    LazySegtree() : LazySegtree(0) {}
+    explicit LazySegtree(int n, S init = e()) : LazySegtree(vector<S>(n, init)) {}
+    explicit LazySegtree(const vector<S> &v) : _n(int(v.size())) {
+        sz = 1, log = 0;
+        while (sz < _n) sz <<= 1, log++;
+        d = vector<S>(2 * sz, e());
+        lz = vector<F>(sz, id());
+        for (int i = 0; i < _n; i++) d[sz + i] = v[i];
+        for (int i = sz - 1; i >= 1; i--) update(i);
     }
-    void init(int n, const FuncMonoid fm, const FuncAction fa,
-              const FuncComposition fc,
-              const Monoid& identity_monoid, const Action& identity_lazy) {
-        FM = fm, FA = fa, FC = fc;
-        IDENTITY_MONOID = identity_monoid, IDENTITY_LAZY = identity_lazy;
-        SIZE = 1, HEIGHT = 0;
-        while (SIZE < n) SIZE <<= 1, ++HEIGHT;
-        dat.assign(SIZE * 2, IDENTITY_MONOID);
-        lazy.assign(SIZE * 2, IDENTITY_LAZY);
+    int size() const { return _n; }
+    void set(int p, S x) {
+        assert(0 <= p && p < _n);
+        p += sz;
+        for (int i = log; i >= 1; i--) push(p >> i);
+        d[p] = x;
+        for (int i = 1; i <= log; i++) update(p >> i);
     }
-
-    void set(int a, const Monoid& v) { dat[a + SIZE] = v; }
-    void build() {
-        for (int k = SIZE - 1; k > 0; --k)
-            dat[k] = FM(dat[k * 2], dat[k * 2 + 1]);
+    S get(int p) {
+        assert(0 <= p && p < _n);
+        p += sz;
+        for (int i = log; i >= 1; i--) push(p >> i);
+        return d[p];
     }
-
-    inline void evaluate(int k) {
-        if (lazy[k] == IDENTITY_LAZY) return;
-        if (k < SIZE) FC(lazy[k * 2], lazy[k]), FC(lazy[k * 2 + 1], lazy[k]);
-        FA(dat[k], lazy[k]);
-        lazy[k] = IDENTITY_LAZY;
+    S prod(int l, int r) {
+        assert(0 <= l && l <= r && r <= _n);
+        if (l == r) return e();
+        l += sz, r += sz;
+        for (int i = log; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+        S sml = e(), smr = e();
+        while (l < r) {
+            if (l & 1) sml = op(sml, d[l++]);
+            if (r & 1) smr = op(d[--r], smr);
+            l >>= 1, r >>= 1;
+        }
+        return op(sml, smr);
     }
-    inline void update(int a, int b, const Action& v, int k, int l, int r) {
-        evaluate(k);
-        if (a <= l && r <= b)
-            FC(lazy[k], v), evaluate(k);
-        else if (a < r && l < b) {
-            update(a, b, v, k * 2, l, (l + r) >> 1);
-            update(a, b, v, k * 2 + 1, (l + r) >> 1, r);
-            dat[k] = FM(dat[k * 2], dat[k * 2 + 1]);
+    S all_prod() const { return d[1]; }
+    void apply(int p, F f) {
+        assert(0 <= p && p < _n);
+        p += sz;
+        for (int i = log; i >= 1; i--) push(p >> i);
+        d[p] = mapping(f, d[p]);
+        for (int i = 1; i <= log; i++) update(p >> i);
+    }
+    void apply(int l, int r, F f) {
+        assert(0 <= l && l <= r && r <= _n);
+        if (l == r) return;
+        l += sz, r += sz;
+        for (int i = log; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+        {
+            int l2 = l, r2 = r;
+            while (l < r) {
+                if (l & 1) all_apply(l++, f);
+                if (r & 1) all_apply(--r, f);
+                l >>= 1, r >>= 1;
+            }
+            l = l2, r = r2;
+        }
+        for (int i = 1; i <= log; i++) {
+            if (((l >> i) << i) != l) update(l >> i);
+            if (((r >> i) << i) != r) update((r - 1) >> i);
         }
     }
-    inline void update(int a, int b, const Action& v) {
-        update(a, b, v, 1, 0, SIZE);
+    void all_apply(F f) { all_apply(1, f); }
+    template <bool (*f)(S)>
+    int max_right(int l) {
+        return max_right(l, [](S x) { return f(x); });
+    }
+    template <class G>
+    int max_right(int l, G f) {
+        assert(0 <= l && l <= _n);
+        assert(f(e()));
+        if (l == _n) return _n;
+        l += sz;
+        for (int i = log; i >= 1; i--) push(l >> i);
+        S sm = e();
+        do {
+            while (l % 2 == 0) l >>= 1;
+            if (!f(op(sm, d[l]))) {
+                while (l < sz) {
+                    push(l);
+                    l = 2 * l;
+                    if (f(op(sm, d[l]))) sm = op(sm, d[l++]);
+                }
+                return l - sz;
+            }
+            sm = op(sm, d[l++]);
+        } while ((l & -l) != l);
+        return _n;
+    }
+    template <bool (*f)(S)>
+    int min_left(int r) {
+        return min_left(r, [](S x) { return f(x); });
+    }
+    template <class G>
+    int min_left(int r, G f) {
+        assert(0 <= r && r <= _n);
+        assert(f(e()));
+        if (r == 0) return 0;
+        r += sz;
+        for (int i = log; i >= 1; i--) push((r - 1) >> i);
+        S sm = e();
+        do {
+            r--;
+            while (r > 1 && (r % 2)) r >>= 1;
+            if (!f(op(d[r], sm))) {
+                while (r < sz) {
+                    push(r);
+                    r = 2 * r + 1;
+                    if (f(op(d[r], sm))) sm = op(d[r--], sm);
+                }
+                return r + 1 - sz;
+            }
+            sm = op(d[r], sm);
+        } while ((r & -r) != r);
+        return 0;
+    }
+    vector<S> to_vector() {
+        vector<S> res(_n);
+        for (int i = 0; i < _n; i++) res[i] = get(i);
+        return res;
     }
 
-    inline Monoid get(int a, int b, int k, int l, int r) {
-        evaluate(k);
-        if (a <= l && r <= b)
-            return dat[k];
-        else if (a < r && l < b)
-            return FM(get(a, b, k * 2, l, (l + r) >> 1),
-                      get(a, b, k * 2 + 1, (l + r) >> 1, r));
-        else
-            return IDENTITY_MONOID;
+  private:
+    int _n, sz, log;
+    vector<S> d;
+    vector<F> lz;
+    void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
+    void all_apply(int k, F f) {
+        d[k] = mapping(f, d[k]);
+        if (k < sz) lz[k] = composition(f, lz[k]);
     }
-    inline Monoid get(int a, int b) {
-        return get(a, b, 1, 0, SIZE);
-    }
-    inline Monoid operator[](int a) {
-        return get(a, a + 1);
-    }
-
-    friend ostream& operator<<(ostream& os, Lazy_SegTree seg) {
-        for (int i = 0; i < seg.N; i++) {
-            os << seg.get(i, i + 1) << " ";
-        }
-        return os;
+    void push(int k) {
+        all_apply(2 * k, lz[k]);
+        all_apply(2 * k + 1, lz[k]);
+        lz[k] = id();
     }
 };
 }
