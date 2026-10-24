@@ -85,7 +85,13 @@ template<typename T> using ordered_set = tree<T, null_type, std::less<T>, rb_tre
 #define _print(n) cout << " " << (n) << endl
 #define print_(n) cout << (n) << " "
 #define ioinit ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(0);cout<<fix(15);cerr<<fix(15)
-#define incheck string _____;if(cin>>_____){throw runtime_error("Input not finished!");}
+inline void incheck() {
+    if (!isatty(0)) {
+        if ((cin >> ws).peek() != EOF) {
+            throw runtime_error("Input not finished!");
+        }
+    }
+}
 template<class... T>
 constexpr auto min(T... a){
     return min(initializer_list<common_type_t<T...>>{a...});
